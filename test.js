@@ -20,4 +20,8 @@ const db = new sqlite3.Database("database/mock.db", sqlite3.OPEN_READWRITE, (err
 
 //db.run("CREATE TABLE verification(id INTEGER PRIMARY KEY,code,gültig)");
 
-db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", [2222,true]);
+db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", ["test1",true]);
+db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", ["test2",true]);
+db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", ["test3",true]);
+db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", ["test4",true]);
+db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", ["test5",true]);

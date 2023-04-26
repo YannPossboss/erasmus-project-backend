@@ -54,16 +54,16 @@ app.post("/register", (req,res)=>{
 
             db.all("SELECT * FROM verification", [], async (err,rows) => {
                 if (err) return console.error(err.message);
-                let admincodeTrue = false; 
+                let verificationcodeTrue = false; 
                 for(let i = 0; i < rows.length; i++){
-                    if(rows.at(i).code == req.body.admin && rows.at(i).gültig == true){
-                        admincodeTrue = true;
+                    if(rows.at(i).code == req.body.verification && rows.at(i).gültig == true){
+                        verificationcodeTrue = true;
                         db.run("UPDATE verification SET gültig = false WHERE id = ?", [rows.at(i).id]);
                     }
                 }
 
-                if(admincodeTrue){
-                db.run("INSERT INTO users(email,password,country,admin,username) VALUES (?,?,?,?,?)", [req.body.email,hashPassword,req.body.country,true,req.body.username], (err) => {
+                if(verificationcodeTrue){
+                db.run("INSERT INTO users(email,password,country,admin,username) VALUES (?,?,?,?,?)", [req.body.email,hashPassword,req.body.country,false,req.body.username], (err) => {
                     if (err){
                         return console.error(err.message);
                     }else{
