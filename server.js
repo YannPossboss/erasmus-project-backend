@@ -96,7 +96,7 @@ app.post("/login", (req,res) => {
         if(!validPass) {return res.status(400).send("Invalid Password"); }
         
         //Create and assign a token
-        const token = jwt.sign({id: dataset.id, test: true}, process.env.TOKEN_SECRET)
+        const token = jwt.sign({id: dataset.id, test: true, admin: dataset.admin, username: dataset.username}, process.env.TOKEN_SECRET)
         res.header("auth-token", token).send(token);
         console.log("Debuginfo  Eingelogt: " + token);
     });
@@ -148,9 +148,9 @@ app.post("/secured/user", (req,res) =>{
 
 app.post("/secured/create", (req,res) =>{
     db.all("SELECT * FROM recipes", [], async (err,rows) => {
-
-        db.run("INSERT INTO recipes(name,country,recipetime,describtion,task1,task2,task3,task4,task5,task6,task7,task8,task9,task10,ingredient1,ingredient2,ingredient3,ingredient4,ingredient5,ingredient6,ingredient7,ingredient8,ingredient9,ingredient10,ingredient11,ingredient12,ingredient13,ingredient14,ingredient15,ingredient16,ingredient17,ingredient18,ingredient19,ingredient20) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
-                [req.body.name,req.body.country,req.body.recipetime,req.body.describtion,req.body.task1,req.body.task2,req.body.task3,req.body.task4,req.body.task5,req.body.task6,req.body.task7,req.body.task8,req.body.task9,req.body.task10,req.body.ingredient1,req.body.ingredient2,req.body.ingredient3,req.body.ingredient4,req.body.ingredient5,req.body.ingredient6,req.body.ingredient7,req.body.ingredient8,req.body.ingredient9,req.body.ingredient10,req.body.ingredient11,req.body.ingredient12,req.body.ingredient13,req.body.ingredient14,req.body.ingredient15,req.body.ingredient16,req.body.ingredient17,req.body.ingredient18,req.body.ingredient19,req.body.ingredient20], 
+        const m = jwt.verify(req.body.token, process.env.TOKEN_SECRET);
+        db.run("INSERT INTO recipes(name,country,recipetime,describtion,veg,imagelink,username,task1,task2,task3,task4,task5,task6,task7,task8,task9,task10,ingredient1,ingredient2,ingredient3,ingredient4,ingredient5,ingredient6,ingredient7,ingredient8,ingredient9,ingredient10,ingredient11,ingredient12,ingredient13,ingredient14,ingredient15,ingredient16,ingredient17,ingredient18,ingredient19,ingredient20,alergene1,alergene2,alergene3,alergene4,alergene5,alergene6,alergene7,alergene8,alergene9,alergene10,alergene11,alergene12,alergene13) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
+                [req.body.name,req.body.country,req.body.recipetime,req.body.describtion,req.body.veg,req.body.imagelink,m.username,req.body.task1,req.body.task2,req.body.task3,req.body.task4,req.body.task5,req.body.task6,req.body.task7,req.body.task8,req.body.task9,req.body.task10,req.body.ingredient1,req.body.ingredient2,req.body.ingredient3,req.body.ingredient4,req.body.ingredient5,req.body.ingredient6,req.body.ingredient7,req.body.ingredient8,req.body.ingredient9,req.body.ingredient10,req.body.ingredient11,req.body.ingredient12,req.body.ingredient13,req.body.ingredient14,req.body.ingredient15,req.body.ingredient16,req.body.ingredient17,req.body.ingredient18,req.body.ingredient19,req.body.ingredient20,req.body.alergene1,req.body.alergene2,req.body.alergene3,req.body.alergene4,req.body.alergene5,req.body.alergene6,req.body.alergene7,req.body.alergene8,req.body.alergene9,req.body.alergene10,req.body.alergene11,req.body.alergene12,req.body.alergene13], 
                 (err) => {
             if (err){
                 res.status(400).send("Upload fehlgeschlagen")
@@ -164,6 +164,13 @@ app.post("/secured/create", (req,res) =>{
 
 
     });
+});
+
+app.post("/secured/admincreatecode", (req,res) =>{
+    const m = jwt.verify(req.body.token, process.env.TOKEN_SECRET);
+    if(m.admin){
+        db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", [req.body,true]);
+    }
 });
 //Hier können geschützte Routen hin <<<<<<<
 
