@@ -170,6 +170,9 @@ app.post("/secured/admincreatecode", (req,res) =>{
     const m = jwt.verify(req.body.token, process.env.TOKEN_SECRET);
     if(m.admin){
         db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", [req.body.vercode,true]);
+        res.send("Hinzugefügt");
+    }else{
+        res.status(400).send("Upload fehlgeschlagen");
     }
 });
 //Hier können geschützte Routen hin <<<<<<<
