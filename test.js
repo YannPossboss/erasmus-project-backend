@@ -16,7 +16,7 @@ const db = new sqlite3.Database("database/mock.db", sqlite3.OPEN_READWRITE, (err
 //sql = "CREATE TABLE users(id INTEGER PRIMARY KEY,email,password,country,admin,username)";
 //db.run(sql);
 
-//db.run("UPDATE recipes SET country = (?) WHERE id = 2", ["Spain"])
+//db.run("UPDATE users SET admin = (?) WHERE id = 1", [true]);
 
 //db.run("CREATE TABLE verification(id INTEGER PRIMARY KEY,code,gültig)");
 
