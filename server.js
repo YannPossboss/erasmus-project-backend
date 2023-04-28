@@ -169,7 +169,7 @@ app.post("/secured/create", (req,res) =>{
 app.post("/secured/admincreatecode", (req,res) =>{
     const m = jwt.verify(req.body.token, process.env.TOKEN_SECRET);
     if(m.admin){
-        db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", [req.body,true]);
+        db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", [req.body.vercode,true]);
     }
 });
 //Hier können geschützte Routen hin <<<<<<<
