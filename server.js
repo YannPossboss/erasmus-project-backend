@@ -9,6 +9,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 // Database imports
 const sqlite3 = require("sqlite3").verbose()
+const { Client } = require('pg');
 // Hashimport
 const bcrypt = require("bcryptjs");
 //JSONWEBTOKEN
@@ -20,6 +21,25 @@ app.use(cors());
 const db = new sqlite3.Database("database/mock.db", sqlite3.OPEN_READWRITE, (err) =>{
     if(err) return console.error(err.message);
 });
+
+const client = new Client({
+    connectionString: process.env.DATABASE_URL || "postgres://daojppxjzlxxtr:f4133ce0b6ad96a89d0e51cf1a54f2a976845a8bd00909105053ceb62679ea4c@ec2-54-195-144-105.eu-west-1.compute.amazonaws.com:5432/dd7ulqkevs8bu",
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+  
+client.connect();
+
+client.query('SELECT * FROM users', (err, res) => {
+    if (err) throw err;
+    for (let row of res.rows) {
+      console.log(JSON.stringify(row));
+    }
+    client.end();
+  });
+
+
 
 //db.run("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,email STRING,password STRING,country STRING,admin BOOLEAN)");
 
