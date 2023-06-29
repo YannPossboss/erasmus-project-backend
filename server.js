@@ -32,24 +32,6 @@ const client = new Client({
   
 client.connect();
 
-/*
-
-  client.query('SELECT * FROM users', (err, response) => {
-    if (err) throw err;
-    for (let row of response.rows) {
-      console.log(JSON.stringify(row));
-    }
-    
-  });
-
-  client.query('INSERT INTO users (email, username, password, country, role) VALUES ($1, $2, $3, $4, $5)', ["yann-possmann@gmx.de", "Yann", "123456789", "Germany", true], (err) => {
-    if (err) throw err;
-    //for (let row of res.rows) {
-    //  console.log(JSON.stringify(row));
-    //}
-
-  });
-*/
 //some middleware
 
 app.use(express.urlencoded({ extended: false}))
@@ -108,13 +90,13 @@ app.post("/register", (req,res)=>{
 
 //Login
 app.post("/login", (req,res) => {
-    db.all("SELECT * FROM users", [], async (err,rows) => {
+    client.query("SELECT * FROM users", async (err,response) => {
         let emailOrUsernameExist = false;
         let dataset;
-        for(let i = 0; i < rows.length; i++){
-            if(req.body.emailOrUsername == rows.at(i).email || req.body.emailOrUsername == rows.at(i).username){
+        for(let i = 0; i < response.rows.length; i++){
+            if(req.body.emailOrUsername == response.rows.at(i).email || req.body.emailOrUsername == response.rows.at(i).username){
                 emailOrUsernameExist = true;
-                dataset = rows.at(i);
+                dataset = response.rows.at(i);
             }
         }
         if(emailOrUsernameExist === false){ return res.status(400).send("Invalid Email or Username");  }
@@ -186,21 +168,9 @@ app.post("/secured/create", (req,res) =>{
                 console.log("Debuginfo: Rezept gespeichert");
             }
           });
-
-
-
     });
 });
 
-app.post("/secured/admincreatecode", (req,res) =>{
-    const m = jwt.verify(req.body.token, process.env.TOKEN_SECRET);
-    if(m.admin){
-        db.run("INSERT INTO verification(code,gültig) VALUES (?,?)", [req.body.vercode,true]);
-        res.send("Hinzugefügt");
-    }else{
-        res.status(400).send("Upload fehlgeschlagen");
-    }
-});
 //Hier können geschützte Routen hin <<<<<<<
 
 
