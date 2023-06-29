@@ -15,6 +15,7 @@ const bcrypt = require("bcryptjs");
 //JSONWEBTOKEN
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const { query } = require("express");
 app.use(cors()); 
 
 //connect to database
@@ -83,7 +84,7 @@ app.post("/register", (req,res)=>{
                 for(let i = 0; i < response.rows.length; i++){
                     if(response.rows.at(i).code == req.body.verification && response.rows.at(i).gültig == true){
                         verificationcodeTrue = true;
-                        db.run("UPDATE verification SET gültig = false WHERE id = ?", [response.rows.at(i).id]);
+                        client.query("UPDATE verification SET gültig = false WHERE id = $1", [response.rows.at(i).id]);
                     }
                 }
 
