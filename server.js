@@ -112,7 +112,7 @@ app.post("/login", (req,res) => {
 
 //Recipe
 app.post("/recipe", (req,res) =>{
-    client.query("SELECT * FROM recipes WHERE name LIKE '%' || ? || '%'", [req.body.search], async (err,response) => {
+    client.query("SELECT * FROM recipes WHERE name LIKE '%' || $1 || '%'", [req.body.search], async (err,response) => {
         let recipe = response.rows.at(req.body.recipeId - 1);
         let recipewithdata = {...recipe, "length": response.rows.length, "idNotPrimaryKey": req.body.recipeId}
         let recipewithdataReady = {...recipewithdata, test: false}
