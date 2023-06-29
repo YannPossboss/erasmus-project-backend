@@ -139,10 +139,10 @@ app.use("/secured/*", (req,res,next) => {
 app.post("/secured/user", (req,res) =>{
     const m = jwt.verify(req.body.token, process.env.TOKEN_SECRET);
     let user = null;
-    db.all("SELECT * FROM users", [], async (err,rows) => {
-        for(let i = 0; i < rows.length; i++){
-            if (rows.at(i).id == m.id){
-                user = rows.at(i);
+    client.query("SELECT * FROM users", [], async (err,response) => {
+        for(let i = 0; i < response.rows.length; i++){
+            if (response.rows.at(i).id == m.id){
+                user = response.rows.at(i);
                 res.header("user", user).send(user);
             }
         }
