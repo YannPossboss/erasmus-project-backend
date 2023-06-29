@@ -31,19 +31,24 @@ const client = new Client({
   
 client.connect();
 
-client.query('SELECT * FROM users', (err, res) => {
+/*
+
+  client.query('SELECT * FROM users', (err, response) => {
     if (err) throw err;
-    for (let row of res.rows) {
+    for (let row of response.rows) {
       console.log(JSON.stringify(row));
     }
-    client.end();
+    
   });
 
+  client.query('INSERT INTO users (email, username, password, country, role) VALUES ($1, $2, $3, $4, $5)', ["yann-possmann@gmx.de", "Yann", "123456789", "Germany", true], (err) => {
+    if (err) throw err;
+    //for (let row of res.rows) {
+    //  console.log(JSON.stringify(row));
+    //}
 
-
-//db.run("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,email STRING,password STRING,country STRING,admin BOOLEAN)");
-
-
+  });
+*/
 //some middleware
 
 app.use(express.urlencoded({ extended: false}))
@@ -55,15 +60,15 @@ console.log("middleware was loaded");
 
 //Register
 app.post("/register", (req,res)=>{
-    db.all("SELECT * FROM users", [], async (err,rows) => {
-        if (err) return console.error(err.message);
+    client.query("SELECT * FROM users", async (err, response) => {
+        if (err) throw err;
         let emailIsInUse = false;
         let usernameIsInUse = false;
-        for(let i = 0; i < rows.length; i++){
-            if(rows.at(i).email === req.body.email){
+        for(let i = 0; i < response.rows.length; i++){
+            if(response.rows.at(i).email === req.body.email){
                 emailIsInUse = true;
             }
-            if(rows.at(i).username === req.body.username){
+            if(response.rows.at(i).username === req.body.username){
                 usernameIsInUse = true;
             }
         }
@@ -72,20 +77,20 @@ app.post("/register", (req,res)=>{
             const salt = await bcrypt.genSalt(10);
             const hashPassword = await bcrypt.hash(req.body.password, salt)
 
-            db.all("SELECT * FROM verification", [], async (err,rows) => {
-                if (err) return console.error(err.message);
+            client.query("SELECT * FROM verification", async (err,response) => {
+                if (err) throw err;
                 let verificationcodeTrue = false; 
-                for(let i = 0; i < rows.length; i++){
-                    if(rows.at(i).code == req.body.verification && rows.at(i).gültig == true){
+                for(let i = 0; i < response.rows.length; i++){
+                    if(response.rows.at(i).code == req.body.verification && response.rows.at(i).gültig == true){
                         verificationcodeTrue = true;
-                        db.run("UPDATE verification SET gültig = false WHERE id = ?", [rows.at(i).id]);
+                        db.run("UPDATE verification SET gültig = false WHERE id = ?", [response.rows.at(i).id]);
                     }
                 }
 
                 if(verificationcodeTrue){
-                db.run("INSERT INTO users(email,password,country,admin,username) VALUES (?,?,?,?,?)", [req.body.email,hashPassword,req.body.country,false,req.body.username], (err) => {
+                db.run("INSERT INTO users(email,password,country,role,username) VALUES ($1, $2, $3, $4, $5)", [req.body.email,hashPassword,req.body.country,false,req.body.username], (err) => {
                     if (err){
-                        return console.error(err.message);
+                        return console.error(err);
                     }else{
                         res.send("Registrierung war erfolgreich");
                         console.log("Debuginfo: Registrierung erfolgreich");
