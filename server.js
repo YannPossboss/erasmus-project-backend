@@ -89,7 +89,7 @@ app.post("/register", (req,res)=>{
                 }
 
                 if(verificationcodeTrue){
-                db.run("INSERT INTO users(email,password,country,role,username) VALUES ($1, $2, $3, $4, $5)", [req.body.email,hashPassword,req.body.country,false,req.body.username], (err) => {
+                client.query("INSERT INTO users(email,password,country,role,username) VALUES ($1, $2, $3, $4, $5)", [req.body.email,hashPassword,req.body.country,false,req.body.username], (err) => {
                     if (err){
                         return console.error(err);
                     }else{
